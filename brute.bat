@@ -22,10 +22,17 @@ if "%1"=="" (
     exit /B 1
 )
 
+REM For when I inevitably accidentally run this with an extra zero
+if %1 gtr 12 (
+    echo Error: Brute force only supports up to 12 nodes
+    echo Usage: %0 ^<argument^>
+    exit /B 1
+)
+
 set param=%1
 set "graph_file=!GRAPH_DIRECTORY!!param!.graph"
 
-@REM dotnet run --project Implementation/Implementation.csproj -- "!graph_file!"
+@REM dotnet run --project Bruteforce/Bruteforce.csproj -- "!graph_file!"
 
 @REM dotnet run restores the project every time and is slow
-.\Implementation\bin\Debug\net9.0\Implementation.exe "!graph_file!"
+.\Bruteforce\bin\Debug\net9.0\Bruteforce.exe "!graph_file!"

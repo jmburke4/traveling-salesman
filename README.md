@@ -1,0 +1,1 @@
+Requires setting ```GRAPH_DIRECTORY``` in a ```.env``` file
