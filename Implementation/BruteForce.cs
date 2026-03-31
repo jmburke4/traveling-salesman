@@ -2,9 +2,10 @@ namespace Implementation;
 
 public class BruteForce : Algorithm
 {
-    public BruteForce(string filePath) : base(filePath)
+    public BruteForce(string filePath) : this(ReadDistanceMatrix(filePath)){ }
+
+    public BruteForce(int[][] matrix) : base(matrix)
     {
-        DistanceMatrix = ReadDistanceMatrix(filePath);
         var startTime = DateTime.Now;
         Result = Solve();
         Elapsed = DateTime.Now - startTime;

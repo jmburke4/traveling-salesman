@@ -8,7 +8,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Files", "Solution Files", "{5DA1AAFD-C97B-9DA0-43CE-FF0997F98AA7}"
 	ProjectSection(SolutionItems) = preProject
 		.gitignore = .gitignore
-		run.bat = run.bat
 		.env = .env
 		README.md = README.md
 	EndProjectSection

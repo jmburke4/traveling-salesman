@@ -12,6 +12,7 @@ class Program
         
         if (args.Length == 1)
         {
+            // TODO Update this to determine whether this is a path or city count
             graphPath = args[0];
         }
         else if (Environment.GetEnvironmentVariable("GRAPH_DIRECTORY") is string graphDirectory)

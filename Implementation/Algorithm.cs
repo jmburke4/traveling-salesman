@@ -4,7 +4,7 @@ namespace Implementation;
 /// An interface representing an algorithm that solves the Travelling Salesman Problem (TSP).
 /// Implementations of this interface should provide a method to compute the optimal route for a given graph of cities and distances.
 /// </summary>
-public abstract class Algorithm(string filePath)
+public abstract class Algorithm
 {
     // TODO Add parameter to prevent immediate evaluation of graph
     //      Is this actually useful?
@@ -13,7 +13,7 @@ public abstract class Algorithm(string filePath)
     /// Gets the distance matrix representing the graph of cities and distances.
     /// The matrix is expected to be symmetric, where DistanceMatrix[i][j] gives the distance from city i to city j.
     /// </summary>
-    public int[][] DistanceMatrix { get; protected set; } = ReadDistanceMatrix(filePath);
+    public int[][] DistanceMatrix { get; protected set; }
 
     /// <summary>
     /// Gets the time taken to compute the solution for the TSP instance.
@@ -26,6 +26,25 @@ public abstract class Algorithm(string filePath)
     /// Gets the result of the TSP solution, which includes the total distance of the best tour found and the sequence of cities in that tour.
     /// </summary>
     public (long Distance, int[] Tour) Result { get; protected set; }
+
+    /// <summary>
+    /// Initializes a new instance of the Algorithm class by reading a distance matrix from a specified file path. 
+    /// The file is expected to contain a lower triangular matrix of distances, where each row i contains the distances from city i to cities 0...i.
+    /// </summary>
+    /// <param name="filePath">The path to the file containing the distance matrix.</param>
+    protected Algorithm(string filePath)
+    {
+        DistanceMatrix = ReadDistanceMatrix(filePath);
+    }
+
+    /// <summary>
+    /// Initializes a new instance of the Algorithm class using a provided distance matrix.
+    /// </summary>
+    /// <param name="matrix">The distance matrix representing the graph of cities and distances.</param>
+    protected Algorithm(int[][] matrix)
+    {
+        DistanceMatrix = matrix;
+    }
 
     /// <summary>
     /// Calculates the total distance of a given tour based on the distance matrix.
