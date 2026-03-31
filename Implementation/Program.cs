@@ -1,5 +1,4 @@
 ﻿using DotNetEnv;
-using System.Diagnostics;
 
 namespace Implementation;
 
@@ -32,30 +31,7 @@ class Program
             return;
         }
 
-        ReadGraph(graphPath);
-    }
-
-    static void ReadGraph(string filePath)
-    {
-        try
-        {
-            using var reader = new StreamReader(filePath);
-            
-            var t = Stopwatch.StartNew();
-
-            string? line;
-            while ((line = reader.ReadLine()) != null)
-            {
-                Console.WriteLine(line);
-                Console.WriteLine();
-            }
-
-            t.Stop();
-            Console.WriteLine($"Time taken: {t.Elapsed.Milliseconds} ms ({t.Elapsed.TotalSeconds} seconds)");
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error reading graph: {ex.Message}");
-        }
+        var bruteforce = new BruteForce(graphPath);
+        bruteforce.PrintSolution(Console.Out);
     }
 }
