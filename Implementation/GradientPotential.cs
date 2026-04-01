@@ -1,3 +1,5 @@
+using System.Data;
+
 namespace Implementation;
 
 /// <summary>
@@ -26,33 +28,34 @@ public class GradientPotential : Algorithm
     private readonly HashSet<int> unvisited;
 
     /// <summary>
-    /// Number of nodes in the graph, derived from the size of the distance matrix.
-    /// </summary>
-    private int Nodes => DistanceMatrix.Length;
-
-    /// <summary>
     /// Initializes the algorithm by reading the distance matrix from a file and setting up the
     /// initial tour and unvisited nodes.
     /// </summary>
     /// <param name="filePath"></param>
-    public GradientPotential(string filePath) : this(ReadDistanceMatrix(filePath)){ }
+    public GradientPotential(string filePath, TextWriter? sink = null) : this(ReadDistanceMatrix(filePath), sink){ }
 
     /// <summary>
     /// Initializes the algorithm with a given distance matrix, setting up the initial tour and
     /// unvisited nodes.
     /// </summary>
     /// <param name="matrix"></param>
-    public GradientPotential(int[][] matrix) : base(matrix)
+    public GradientPotential(int[][] matrix, TextWriter? sink = null) : base(matrix, sink)
     {
-        var startTime = DateTime.Now;
-        
         tour = [0, 1, 2];
         unvisited = [.. Enumerable.Range(3, Nodes - 3)];
-        Result = Solve();
 
-        Elapsed = DateTime.Now - startTime;
+        try
+        {
+            StartProgressReporting();
+            Result = Solve();
+        }
+        finally
+        {
+            StopProgressReporting();
+        }
     }
 
+    // TODO Maybe run over the set one more time and perform 2opt swaps to clean up any obvious crossings?
     public override (long Distance, int[] Tour) Solve()
     {
         Dictionary<int, double> bestCost = [];
@@ -74,7 +77,12 @@ public class GradientPotential : Algorithm
             unvisited.Remove(chosenNode);
 
             RecomputeAll(bestCost, bestEdge, potential);
+
+            // Calculate percent complete
+            UpdateStatus((Nodes - unvisited.Count) * 100.0 / Nodes);
         }
+
+        UpdateStatus(100);
 
         return (CalculateTourDistance([.. tour]), tour.ToArray());
     }
