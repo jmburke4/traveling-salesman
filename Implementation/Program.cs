@@ -1,6 +1,5 @@
 ﻿using DotNetEnv;
 using CommandLine;
-using System.ComponentModel.DataAnnotations;
 
 namespace Implementation;
 
@@ -72,59 +71,79 @@ class Program
 
     static void Main(string[] args)
     {
-        Env.TraversePath().Load();
-        string graphPath = "";
-        Parser.Default.ParseArguments<BFOptions, GPOptions>(args).WithParsed<Options>(
-            o =>
-            {       
-                if (o.Debug ?? false) Console.WriteLine(o);
+        try
+        {
+            Env.TraversePath().Load();
+            string graphPath = "";
+            Parser.Default.ParseArguments<BFOptions, GPOptions>(args).WithParsed<Options>(
+                o =>
+                {       
+                    string envDir = Environment.GetEnvironmentVariable("GRAPH_DIRECTORY") ?? "";
+                    if (o.Debug ?? false)
+                    {
+                        Console.WriteLine(o);
+                        if (envDir == "") Console.WriteLine("No .env found");
+                        else Console.WriteLine($"Directory from .env: {envDir}");
+                    }
 
-                // Double check that file exists
-                o.File ??= "";        
-                if (!o.File.EndsWith(".graph"))
-                {
-                    Console.WriteLine($"{o.File} must be a .graph file");
-                    Environment.Exit(1);
-                }
-                string envDir = Environment.GetEnvironmentVariable("GRAPH_DIRECTORY") ?? "";
-                if (File.Exists(o.File))
-                    graphPath = o.File;
-                else if (File.Exists(Path.Combine(o.Directory ?? "", o.File)))
-                    graphPath = Path.Combine(o.Directory ?? "", o.File);
-                else if (File.Exists(Path.Combine(envDir, o.File)))
-                    graphPath = Path.Combine(envDir, o.File);
-                else
-                {
-                    Console.WriteLine($"Could not find file \"{o.File}\" in:");
-                    Console.WriteLine($"\t{Path.Combine(o.Directory ?? "", o.File)}");
-                    Console.WriteLine($"\t{Path.Combine(envDir, o.File)}");
-                    Environment.Exit(1);
-                }
-            }
-            ).MapResult(
-                (BFOptions o) =>
-                {
-                    BruteForce algorithm = new(graphPath, o.PrintStatus == null ? null : Console.Out);
-                    if (!string.IsNullOrEmpty(o.OutFile))
+                    // Double check that file exists
+                    o.File ??= "";        
+                    if (!o.File.EndsWith(".graph"))
                     {
-                        using StreamWriter sw = new(o.OutFile);
-                        algorithm.PrintSolution(output: sw, printTour: o.PrintTour ?? false);
+                        Console.WriteLine($"{o.File} must be a .graph file");
+                        Environment.Exit(1);
                     }
-                    algorithm.PrintSolution(printTour: o.PrintTour ?? false);
-                    return 0;
-                },
-                (GPOptions o) =>
-                {
-                    GradientPotential algorithm = new(graphPath, o.PrintStatus == null ? null : Console.Out);
-                    if (!string.IsNullOrEmpty(o.OutFile))
+                    if (File.Exists(o.File))
+                        graphPath = o.File;
+                    else if (File.Exists(Path.Combine(o.Directory ?? "", o.File)))
+                        graphPath = Path.Combine(o.Directory ?? "", o.File);
+                    else if (File.Exists(Path.Combine(envDir, o.File)))
+                        graphPath = Path.Combine(envDir, o.File);
+                    else
                     {
-                        using StreamWriter sw = new(o.OutFile);
-                        algorithm.PrintSolution(output: sw, printTour: o.PrintTour ?? false);
+                        Console.WriteLine($"Could not find file \"{o.File}\" in:");
+                        Console.WriteLine($"\t{Path.Combine(o.Directory ?? "", o.File)}");
+                        Console.WriteLine($"\t{Path.Combine(envDir, o.File)}");
+                        Environment.Exit(1);
                     }
-                    algorithm.PrintSolution(printTour: o.PrintTour ?? false);
-                    return 0;
-                },
-                errs => 1
-            );
+                }
+                ).MapResult(
+                    (BFOptions o) =>
+                    {
+                        BruteForce algorithm = new(graphPath, o.PrintStatus == null ? null : Console.Out);
+                        if (!string.IsNullOrEmpty(o.OutFile))
+                        {
+                            using StreamWriter sw = new(o.OutFile);
+                            algorithm.PrintSolution(output: sw, printTour: o.PrintTour ?? false);
+                        }
+                        algorithm.PrintSolution(printTour: o.PrintTour ?? false);
+                        return 0;
+                    },
+                    (GPOptions o) =>
+                    {
+                        GradientPotential algorithm = new(graphPath, o.PrintStatus == null ? null : Console.Out);
+                        if (!string.IsNullOrEmpty(o.OutFile))
+                        {
+                            using StreamWriter sw = new(o.OutFile);
+                            algorithm.PrintSolution(output: sw, printTour: o.PrintTour ?? false);
+                        }
+                        algorithm.PrintSolution(printTour: o.PrintTour ?? false);
+                        return 0;
+                    },
+                    errs => 1
+                );   
+        }
+        catch (Sprache.ParseException ex)
+        {
+            Console.Error.WriteLine($"Error parsing .env file:\n\t{ex.Message}");
+        }
+        catch (InvalidOperationException ex)
+        {
+            Console.Error.WriteLine($"Error parsing program parameters:\n\t{ex.Message}");  
+        }
+        catch (Exception ex)
+        {
+            Console.Error.WriteLine($"There was an exception during the execution of the algorithm:\n\t{ex.Message}");
+        }
     }
 }
