@@ -10,7 +10,7 @@ public class BruteForce : Algorithm
 
     public BruteForce(int[][] matrix, TextWriter? sink = null) : base(matrix, sink)
     {
-        if (Nodes > 12) throw new BruteForceException("Brute-force algorithm is not feasible for more than 12 nodes due to factorial growth of permutations.");
+        if (Nodes > 12) throw new BruteForceException("The brute-force algorithm is not feasible for more than 12 nodes due to factorial growth of permutations.");
         try
         {
             StartProgressReporting();
