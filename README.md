@@ -6,7 +6,7 @@ The algorithm builds the tour incrementally, inserting one city per iteration un
 
 > I've used Microsoft Copilot to learn about potential gradients in physics, to learn how the concept could be applied to the traveling salesman problem, and to write unit tests for the algorithms.
 
-The project is written in C# using .NET 9.0, and the solution contains an *Implementation* project that contains the two algorithms, and an *Implementation.Tests* project that contains unit tests for the two algorithms.
+The project is written in C# using .NET 9.0, and the solution contains an *Implementation* project that contains the two algorithms, and an *Implementation.Tests* project that contains unit tests for the two algorithms. The code for the Gradient Potential algorithm can be found in *Implementation/GradientPotential.cs*.
 
 View this project on my [GitHub](https://github.com/jmburke4/traveling-salesman/).
 
@@ -14,6 +14,8 @@ View this project on my [GitHub](https://github.com/jmburke4/traveling-salesman/
 
 ```
 traveling-salesman
+    fifteenresult.md
+    fiveresult.md
     README.md
     testoutput.md
     traveling-salesman.sln
